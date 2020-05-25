@@ -1,0 +1,10 @@
+#
+# For a description of the syntax of this configuration file,
+# see kconfig-language at https://www.kernel.org/doc/Documentation/kbuild/kconfig-language.txt
+#
+
+config LIB_TINYCRYPT
+	bool "The TinyCrypt Cryptographic Library support"
+	default n
+	---help---
+		Enable support for the TinyCrypt Cryptographic Library
