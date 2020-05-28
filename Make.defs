@@ -31,7 +31,7 @@
 #
 ############################################################################
 
-ifeq ($(CONFIG_LIB_TINYCRYPT),y)
+ifeq ($(CONFIG_TINYCRYPT),y)
 CONFIGURED_APPS += $(APPDIR)/external/tinycrypt
 CFLAGS += ${shell $(INCDIR) $(INCDIROPT) "$(CC)" $(APPDIR)/external/tinycrypt/lib/include}
 CXXFLAGS += ${shell $(INCDIR) $(INCDIROPT) "$(CC)" $(APPDIR)/external/tinycrypt/lib/include}
