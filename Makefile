@@ -1,7 +1,7 @@
 ############################################################################
 # external/external/tinycrypt/Makefile
 #
-#   Copyright (C) 2019 Xiaomi Inc. All rights reserved.
+#   Copyright (C) 2020 Xiaomi Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -34,6 +34,55 @@
 
 -include $(TOPDIR)/Make.defs
 
-CSRCS = $(wildcard lib/source/*.c)
+CSRCS += lib/source/utils.c
+CSRCS += lib/source/ecc.c
+
+ifeq ($(CONFIG_TINYCRYPT_ECC_DH),y)
+  CSRCS += lib/source/ecc_dh.c
+endif
+
+ifeq ($(CONFIG_TINYCRYPT_ECC_DSA),y)
+  CSRCS += lib/source/ecc_dsa.c
+endif
+
+ifeq ($(CONFIG_TINYCRYPT_AES),y)
+  CSRCS += lib/source/aes_decrypt.c
+endif
+
+ifeq ($(CONFIG_TINYCRYPT_AES),y)
+  CSRCS += lib/source/aes_encrypt.c
+endif
+
+ifeq ($(CONFIG_TINYCRYPT_AES_CBC),y)
+  CSRCS += lib/source/cbc_mode.c
+endif
+
+ifeq ($(CONFIG_TINYCRYPT_AES_CTR),y)
+  CSRCS += lib/source/ctr_mode.c
+endif
+
+ifeq ($(CONFIG_TINYCRYPT_AES_CCM),y)
+  CSRCS += lib/source/ccm_mode.c
+endif
+
+ifeq ($(CONFIG_TINYCRYPT_AES_CMAC),y)
+  CSRCS += lib/source/cmac_mode.c
+endif
+
+ifeq ($(CONFIG_TINYCRYPT_SHA256),y)
+  CSRCS += lib/source/sha256.c
+endif
+
+ifeq ($(CONFIG_TINYCRYPT_SHA256_HMAC),y)
+  CSRCS += lib/source/hmac.c
+endif
+
+ifeq ($(CONFIG_TINYCRYPT_SHA256_HMAC_PRNG),y)
+  CSRCS += lib/source/hmac_prng.c
+endif
+
+ifeq ($(CONFIG_TINYCRYPT_CTR_PRNG),y)
+  CSRCS += lib/source/ctr_prng.c
+endif
 
 include $(APPDIR)/Application.mk
