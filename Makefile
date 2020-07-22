@@ -85,4 +85,6 @@ ifeq ($(CONFIG_TINYCRYPT_CTR_PRNG),y)
   CSRCS += lib/source/ctr_prng.c
 endif
 
+CFLAGS += ${shell $(INCDIR) $(INCDIROPT) "$(CC)" $(APPDIR)/external/tinycrypt/lib/include}
+
 include $(APPDIR)/Application.mk
