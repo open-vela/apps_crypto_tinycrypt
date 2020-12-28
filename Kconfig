@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+menu "Crypto: TinyCrypt cryptography library"
+
 config TINYCRYPT
   bool "TinyCrypt Support"
   help
@@ -100,3 +102,5 @@ config TINYCRYPT_AES_CMAC
     This option enables support for AES-128 CMAC mode.
 
 endif
+
+endmenu
