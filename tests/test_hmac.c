@@ -66,7 +66,7 @@ unsigned int do_hmac_test(TCHmacState_t h, unsigned int testnum, const uint8_t *
 /*
  * NIST test vectors for encryption.
  */
-unsigned int test_1(void)
+static unsigned int test_1(void)
 {
         unsigned int result = TC_PASS;
 
@@ -94,7 +94,7 @@ unsigned int test_1(void)
         return result;
 }
 
-unsigned int test_2(void)
+static unsigned int test_2(void)
 {
         unsigned int result = TC_PASS;
         TC_PRINT("HMAC %s:\n", __func__);
@@ -122,7 +122,7 @@ unsigned int test_2(void)
         return result;
 }
 
-unsigned int test_3(void)
+static unsigned int test_3(void)
 {
         unsigned int result = TC_PASS;
         TC_PRINT("HMAC %s:\n", __func__);
@@ -153,7 +153,7 @@ unsigned int test_3(void)
         return result;
 }
 
-unsigned int test_4(void)
+static unsigned int test_4(void)
 {
         unsigned int result = TC_PASS;
         TC_PRINT("HMAC %s:\n", __func__);
@@ -186,7 +186,7 @@ unsigned int test_4(void)
         return result;
 }
 
-unsigned int test_5(void)
+static unsigned int test_5(void)
 {
         unsigned int result = TC_PASS;
         TC_PRINT("HMAC %s:\n", __func__);
@@ -214,7 +214,7 @@ unsigned int test_5(void)
         return result;
 }
 
-unsigned int test_6(void)
+static unsigned int test_6(void)
 {
         unsigned int result = TC_PASS;
         TC_PRINT("HMAC %s:\n", __func__);
@@ -254,7 +254,7 @@ unsigned int test_6(void)
         return result;
 }
 
-unsigned int test_7(void)
+static unsigned int test_7(void)
 {
         unsigned int result = TC_PASS;
         TC_PRINT("HMAC %s:\n", __func__);
