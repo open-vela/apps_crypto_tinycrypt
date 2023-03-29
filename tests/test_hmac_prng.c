@@ -96,7 +96,7 @@ unsigned int do_hmac_prng_pr_false_test(unsigned int testnum, const struct
 	return result;
 }
 
-unsigned int test_1(void)
+static unsigned int test_1(void)
 {
 	unsigned int result = TC_PASS;
 	const struct hmac_prng_test_vector vec = {
@@ -150,7 +150,7 @@ unsigned int test_1(void)
 	return result;
 }
 
-unsigned int test_2(void)
+static unsigned int test_2(void)
 {
 	unsigned int result = TC_PASS;
 	const struct hmac_prng_test_vector vec = {
@@ -204,7 +204,7 @@ unsigned int test_2(void)
 	return result;
 }
 
-unsigned int test_3(void)
+static unsigned int test_3(void)
 {
 	unsigned int result = TC_PASS;
 	const struct hmac_prng_test_vector vec = {
@@ -258,7 +258,7 @@ unsigned int test_3(void)
 	return result;
 }
 
-unsigned int test_4(void)
+static unsigned int test_4(void)
 {
 	unsigned int result = TC_PASS;
 	const struct hmac_prng_test_vector vec = {
