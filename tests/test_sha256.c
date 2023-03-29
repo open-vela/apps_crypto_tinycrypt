@@ -50,7 +50,7 @@
 /*
  * NIST SHA256 test vector 1.
  */
-unsigned int test_1(void)
+static unsigned int test_1(void)
 {
         unsigned int result = TC_PASS;
 
@@ -76,7 +76,7 @@ unsigned int test_1(void)
 /*
  * NIST SHA256 test vector 2.
  */
-unsigned int test_2(void)
+static unsigned int test_2(void)
 {
         unsigned int result = TC_PASS;
         TC_PRINT("SHA256 test #2:\n");
@@ -99,7 +99,7 @@ unsigned int test_2(void)
         return result;
 }
 
-unsigned int test_3(void)
+static unsigned int test_3(void)
 {
         unsigned int result = TC_PASS;
         TC_PRINT("SHA256 test #3:\n");
@@ -122,7 +122,7 @@ unsigned int test_3(void)
         return result;
 }
 
-unsigned int test_4(void)
+static unsigned int test_4(void)
 {
         unsigned int result = TC_PASS;
         TC_PRINT("SHA256 test #4:\n");
@@ -145,7 +145,7 @@ unsigned int test_4(void)
         return result;
 }
 
-unsigned int test_5(void)
+static unsigned int test_5(void)
 {
         unsigned int result = TC_PASS;
         TC_PRINT("SHA256 test #5:\n");
@@ -171,7 +171,7 @@ unsigned int test_5(void)
         return result;
 }
 
-unsigned int test_6(void)
+static unsigned int test_6(void)
 {
         unsigned int result = TC_PASS;
         TC_PRINT("SHA256 test #6:\n");
@@ -196,7 +196,7 @@ unsigned int test_6(void)
         return result;
 }
 
-unsigned int test_7(void)
+static unsigned int test_7(void)
 {
         unsigned int result = TC_PASS;
         TC_PRINT("SHA256 test #7:\n");
@@ -221,7 +221,7 @@ unsigned int test_7(void)
         return result;
 }
 
-unsigned int test_8(void)
+static unsigned int test_8(void)
 {
         unsigned int result = TC_PASS;
 
@@ -247,7 +247,7 @@ unsigned int test_8(void)
         return result;
 }
 
-unsigned int test_9(void)
+static unsigned int test_9(void)
 {
         unsigned int result = TC_PASS;
         TC_PRINT("SHA256 test #9:\n");
@@ -272,7 +272,7 @@ unsigned int test_9(void)
         return result;
 }
 
-unsigned int test_10(void)
+static unsigned int test_10(void)
 {
         unsigned int result = TC_PASS;
         TC_PRINT("SHA256 test #10:\n");
@@ -297,7 +297,7 @@ unsigned int test_10(void)
         return result;
 }
 
-unsigned int test_11(void)
+static unsigned int test_11(void)
 {
         unsigned int result = TC_PASS;
         TC_PRINT("SHA256 test #11:\n");
@@ -322,7 +322,7 @@ unsigned int test_11(void)
         return result;
 }
 
-unsigned int test_12(void)
+static unsigned int test_12(void)
 {
         unsigned int result = TC_PASS;
         TC_PRINT("SHA256 test #12:\n");
@@ -351,7 +351,7 @@ unsigned int test_12(void)
         return result;
 }
 
-unsigned int test_13(void)
+static unsigned int test_13(void)
 {
         unsigned int result = TC_PASS;
         TC_PRINT("SHA256 test #13:\n");
@@ -379,7 +379,7 @@ unsigned int test_13(void)
         return result;
 }
 
-unsigned int test_14(void)
+static unsigned int test_14(void)
 {
         unsigned int result = TC_PASS;
         TC_PRINT("SHA256 test #14:\n");
