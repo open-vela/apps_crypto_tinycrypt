@@ -83,7 +83,7 @@ int tc_aes128_set_encrypt_key(TCAesKeySched_t s, const uint8_t *k)
 	}
 
 	for (i = 0; i < Nk; ++i) {
-		s->words[i] = (k[Nb*i]<<24) | (k[Nb*i+1]<<16) |
+		s->words[i] = ((unsigned int)k[Nb*i]<<24) | (k[Nb*i+1]<<16) |
 			      (k[Nb*i+2]<<8) | (k[Nb*i+3]);
 	}
 
