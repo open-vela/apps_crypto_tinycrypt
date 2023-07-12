@@ -135,4 +135,6 @@ int main(void)
  exitTest:
         TC_END_RESULT(result);
         TC_END_REPORT(result);
+
+        return result;
 }
