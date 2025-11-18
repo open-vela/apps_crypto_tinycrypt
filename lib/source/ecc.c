@@ -56,6 +56,8 @@
 #include <tinycrypt/ecc_platform_specific.h>
 #include <string.h>
 
+#define uECC_MAX_WORDS 8
+
 /* IMPORTANT: Make sure a cryptographically-secure PRNG is set and the platform
  * has access to enough entropy in order to feed the PRNG regularly. */
 #if default_RNG_defined
@@ -499,6 +501,25 @@ void double_jacobian_default(uECC_word_t * X1, uECC_word_t * Y1,
 	uECC_vli_set(Y1, t4, num_words);
 }
 
+void mod_sqrt_default(uECC_word_t *a, uECC_Curve curve)
+{
+    bitcount_t i;
+    uECC_word_t p1[uECC_MAX_WORDS] = {1};
+    uECC_word_t l_result[uECC_MAX_WORDS] = {1};
+    wordcount_t num_words = curve->num_words;
+
+    /* When curve->p == 3 (mod 4), we can compute
+       sqrt(a) = a^((curve->p + 1) / 4) (mod curve->p). */
+    uECC_vli_add(p1, curve->p, p1, num_words); /* p1 = curve_p + 1 */
+    for (i = uECC_vli_numBits(p1, num_words) - 1; i > 1; --i) {
+        uECC_vli_modSquare_fast(l_result, l_result, curve);
+        if (uECC_vli_testBit(p1, i)) {
+            uECC_vli_modMult_fast(l_result, l_result, a, curve);
+        }
+    }
+    uECC_vli_set(a, l_result, num_words);
+}
+
 void x_side_default(uECC_word_t *result,
 		    const uECC_word_t *x,
 		    uECC_Curve curve)
@@ -511,6 +532,55 @@ void x_side_default(uECC_word_t *result,
 	uECC_vli_modMult_fast(result, result, x, curve); /* r = x^3 - 3x */
 	/* r = x^3 - 3x + b: */
 	uECC_vli_modAdd(result, result, curve->b, curve->p, num_words);
+}
+
+static void omega_mult_secp160r1(unsigned int *result, const unsigned int *right);
+
+uECC_Curve uECC_secp160r1(void)
+{
+	return &curve_secp160r1;
+}
+
+void vli_mmod_fast_secp160r1(unsigned int *result, unsigned int *product)
+{
+    unsigned int tmp[2 * num_words_secp160r1];
+    unsigned int carry;
+
+    uECC_vli_clear(tmp, num_words_secp160r1);
+    uECC_vli_clear(tmp + num_words_secp160r1, num_words_secp160r1);
+
+    omega_mult_secp160r1(tmp, product + num_words_secp160r1); /* (Rq, q) = q * c */
+
+    carry = uECC_vli_add(result, product, tmp, num_words_secp160r1); /* (C, r) = r + q */
+    uECC_vli_clear(product, num_words_secp160r1);
+    omega_mult_secp160r1(product, tmp + num_words_secp160r1); /* Rq*c */
+    carry += uECC_vli_add(result, result, product, num_words_secp160r1); /* (C1, r) = r + Rq*c */
+
+    while (carry > 0) {
+        --carry;
+        uECC_vli_sub(result, result, curve_secp160r1.p, num_words_secp160r1);
+    }
+    if (uECC_vli_cmp_unsafe(result, curve_secp160r1.p, num_words_secp160r1) > 0) {
+        uECC_vli_sub(result, result, curve_secp160r1.p, num_words_secp160r1);
+    }
+}
+
+void omega_mult_secp160r1(unsigned int *result, const unsigned int *right)
+{
+    uint32_t carry;
+    unsigned i;
+
+    /* Multiply by (2^31 + 1). */
+    uECC_vli_set(result + 1, right, num_words_secp160r1); /* 2^32 */
+    uECC_vli_rshift1(result + 1, num_words_secp160r1); /* 2^31 */
+    result[0] = right[0] << 31; /* get last bit from shift */
+
+    carry = uECC_vli_add(result, result, right, num_words_secp160r1); /* 2^31 + 1 */
+    for (i = num_words_secp160r1; carry; ++i) {
+        uint64_t sum = (uint64_t)result[i] + carry;
+        result[i] = (uint32_t)sum;
+        carry = sum >> 32;
+    }
 }
 
 uECC_Curve uECC_secp256r1(void)
@@ -938,5 +1008,25 @@ int uECC_compute_public_key(const uint8_t *private_key, uint8_t *public_key,
 	return 1;
 }
 
-
+void uECC_compress(const uint8_t *public_key, uint8_t *compressed, uECC_Curve curve)
+{
+    wordcount_t i;
+    for (i = 0; i < curve->num_bytes; ++i) {
+        compressed[i+1] = public_key[i];
+    }
+    compressed[0] = 2 + (public_key[curve->num_bytes * 2 - 1] & 0x01);
+}
+void uECC_decompress(const uint8_t *compressed, uint8_t *public_key, uECC_Curve curve)
+{
+    uECC_word_t point[uECC_MAX_WORDS * 2];
+    uECC_word_t *y = point + curve->num_words;
+    uECC_vli_bytesToNative(point, compressed + 1, curve->num_bytes);
+    curve->x_side(y, point, curve);
+    curve->mod_sqrt(y, curve);
+    if ((y[0] & 0x01) != (compressed[0] & 0x01)) {
+        uECC_vli_sub(y, curve->p, y, curve->num_words);
+    }
+    uECC_vli_nativeToBytes(public_key, curve->num_bytes, point);
+    uECC_vli_nativeToBytes(public_key + curve->num_bytes, curve->num_bytes, y);
+}
 

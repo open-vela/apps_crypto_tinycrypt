@@ -119,6 +119,7 @@ struct uECC_Curve_t {
   uECC_word_t b[NUM_ECC_WORDS];
   void (*double_jacobian)(uECC_word_t * X1, uECC_word_t * Y1, uECC_word_t * Z1,
 	uECC_Curve curve);
+  void (*mod_sqrt)(uECC_word_t *a, uECC_Curve curve);
   void (*x_side)(uECC_word_t *result, const uECC_word_t *x, uECC_Curve curve);
   void (*mmod_fast)(uECC_word_t *result, uECC_word_t *product);
 };
@@ -132,6 +133,13 @@ struct uECC_Curve_t {
  */
 void double_jacobian_default(uECC_word_t * X1, uECC_word_t * Y1,
 			     uECC_word_t * Z1, uECC_Curve curve);
+
+/*
+ * @brief Compute a = sqrt(a) % curve_p.
+ * @param a IN/OUT --a = sqrt(a) % curve_p.
+ * @param curve IN -- elliptic curve
+ */
+void mod_sqrt_default(uECC_word_t *a, uECC_Curve curve);
 
 /*
  * @brief Computes x^3 + ax + b. result must not overlap x.
@@ -148,7 +156,11 @@ void x_side_default(uECC_word_t *result, const uECC_word_t *x,
  * @param result OUT -- product % curve_p
  * @param product IN -- value to be reduced mod curve_p
  */
+void vli_mmod_fast_secp160r1(unsigned int *result, unsigned int *product);
 void vli_mmod_fast_secp256r1(unsigned int *result, unsigned int *product);
+
+#define num_bytes_secp160r1 20
+#define num_words_secp160r1 5
 
 /* Bytes to words ordering: */
 #define BYTES_TO_WORDS_8(a, b, c, d, e, f, g, h) 0x##d##c##b##a, 0x##h##g##f##e
@@ -156,6 +168,36 @@ void vli_mmod_fast_secp256r1(unsigned int *result, unsigned int *product);
 #define BITS_TO_WORDS(num_bits) \
 	((num_bits + ((uECC_WORD_SIZE * 8) - 1)) / (uECC_WORD_SIZE * 8))
 #define BITS_TO_BYTES(num_bits) ((num_bits + 7) / 8)
+
+static const struct uECC_Curve_t curve_secp160r1 = {
+    num_words_secp160r1,
+    num_bytes_secp160r1,
+    161, /* num_n_bits */ {
+		BYTES_TO_WORDS_8(FF, FF, FF, 7F, FF, FF, FF, FF),
+		BYTES_TO_WORDS_8(FF, FF, FF, FF, FF, FF, FF, FF),
+		BYTES_TO_WORDS_4(FF, FF, FF, FF)
+	}, {
+		BYTES_TO_WORDS_8(57, 22, 75, CA, D3, AE, 27, F9),
+		BYTES_TO_WORDS_8(C8, F4, 01, 00, 00, 00, 00, 00),
+		BYTES_TO_WORDS_8(00, 00, 00, 00, 01, 00, 00, 00)
+	}, {
+		BYTES_TO_WORDS_8(82, FC, CB, 13, B9, 8B, C3, 68),
+		BYTES_TO_WORDS_8(89, 69, 64, 46, 28, 73, F5, 8E),
+		BYTES_TO_WORDS_4(68, B5, 96, 4A),
+
+		BYTES_TO_WORDS_8(32, FB, C5, 7A, 37, 51, 23, 04),
+		BYTES_TO_WORDS_8(12, C9, DC, 59, 7D, 94, 68, 31),
+		BYTES_TO_WORDS_4(55, 28, A6, 23)
+	}, {
+		BYTES_TO_WORDS_8(45, FA, 65, C5, AD, D4, D4, 81),
+		BYTES_TO_WORDS_8(9F, F8, AC, 65, 8B, 7A, BD, 54),
+		BYTES_TO_WORDS_4(FC, BE, 97, 1C)
+	},
+    	&double_jacobian_default,
+	&mod_sqrt_default,
+    	&x_side_default,
+    	&vli_mmod_fast_secp160r1
+};
 
 /* definition of curve NIST p-256: */
 static const struct uECC_Curve_t curve_secp256r1 = {
@@ -188,10 +230,12 @@ static const struct uECC_Curve_t curve_secp256r1 = {
                 BYTES_TO_WORDS_8(E7, 93, 3A, AA, D8, 35, C6, 5A)
 	},
         &double_jacobian_default,
+	&mod_sqrt_default,
         &x_side_default,
         &vli_mmod_fast_secp256r1
 };
 
+uECC_Curve uECC_secp160r1(void);
 uECC_Curve uECC_secp256r1(void);
 
 /*
@@ -537,6 +581,23 @@ void uECC_vli_nativeToBytes(uint8_t *bytes, int num_bytes,
  */
 void uECC_vli_bytesToNative(unsigned int *native, const uint8_t *bytes,
 			    int num_bytes);
+
+/*
+ * @brief uECC_compress() function. Compress a public key.
+ * @param compressed OUT -- Will be filled in with the compressed public key.
+ *                          Must be at least (curve size + 1) bytes long;
+ *                          for example, if the curve is secp256r1,
+ *                          compressed must be 33 bytes long.
+ * @param public_key IN -- The public key to compress.
+ */
+void uECC_compress(const uint8_t *public_key, uint8_t *compressed, uECC_Curve curve);
+
+/*
+ * @brief uECC_decompress() function. Decompress a compressed public key.
+ * @param public_key OUT -- Will be filled in with the decompressed public key.
+ * @param compressed IN -- The compressed public key.
+ */
+void uECC_decompress(const uint8_t *compressed, uint8_t *public_key, uECC_Curve curve);
 
 #ifdef __cplusplus
 }
